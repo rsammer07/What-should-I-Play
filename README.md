@@ -84,5 +84,6 @@ Welcome to "What Should I Play?" - your go-to app for indecisive gaming moments!
 
 ### Wireframe:
 
-![image](https://github.com/rsammer07/What-should-I-Play/assets/140571449/82eb1604-354f-4089-897b-be809a6e7780)
+![image](https://github.com/rsammer07/What-should-I-Play/assets/140571449/350e17df-6ef0-43c4-b2d9-c1702ef57bb1)
+
 
