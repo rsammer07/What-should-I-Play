@@ -79,3 +79,10 @@ Welcome to "What Should I Play?" - your go-to app for indecisive gaming moments!
 3. **Animation of the randomizer:**
    - Impliment anamations when the user hits the randomize button.
 
+
+
+
+### Wireframe:
+
+![image](https://github.com/rsammer07/What-should-I-Play/assets/140571449/82eb1604-354f-4089-897b-be809a6e7780)
+
