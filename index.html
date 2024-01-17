@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What Should I Play?</title>
+</head>
+<body>
+    
+
+    <main>
+        <div>
+                    <form encType="multipart/form-data">
+                        <fieldset><p style="text-align:center">
+                            <b><legend>Log a new piece of artwork!</legend>
+                            <br>
+                            <br>
+
+                        <div class="mb-3" style="width: 18rem; text-align:center">
+                            <label for="platform" class="form-label">platform: </label>
+                            <input type="text" name="platform" class="form-control" id="platform" aria-describedby="text">
+                            
+                          </div>
+                          <div class="mb-3" style="width: 18rem; text-align:center">
+                            <label for="title" class="form-label">title: </label>
+                            <input type="text" name="title" class="form-control" id="title" aria-describedby="text">
+                            
+                          </div>
+                     
+
+                        <img
+                        class="mb-3" style="width: 18rem; text-align:center"
+                          id="preview"
+                          height="200"
+                          src="https://i.ibb.co/2dtXpf2/blank-avatar.webp"
+                          alt="preview"
+                        />
+                       
+                          <div class="mb-3" style="width: 18rem; text-align:center">
+                            <!-- <input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;"> -->
+                            <label for="file" class="form-label">OR UPLOAD IMAGE: </label>
+                            <input type="file" onChange="onChangeImageHandler(event)" accept="image/gif, image/jpeg, image/png, .jpeg"  id="file" class="form-control" aria-describedby="text">
+                            <div id="imageUpload" class="form-text">Upload image.</div>
+
+                          
+                </fieldset>
+                <p style="text-align:center">
+                    <button class="btn btn-outline-success" onclick="handleSubmit(event)">Submit! &#128525;</button>
+            </form>
+
+        </div>
+        </div>
+    </main>
+    <script defer>
+const preview = document.getElementById("preview");
+const imageData = document.getElementById("imageUpload");
+
+
+//selected image handler
+const onChangeImageHandler = (event) => {
+const file = event.target.files[0];
+const reader = new FileReader();
+reader.readAsDataURL(file);
+reader.onload = function (e) {
+  // as soon as the file is loaded from machine to browser log the result.
+  const imageData = e.target.result;
+  console.log(reader.result);
+  preview.src = imageData; //assigning the preview img's src to the value of the imagedata
+};
+
+};
+
+//-----Function for Submitting our form data
+const handleSubmit = (e) => {
+e.preventDefault();
+
+console.log("submitting image");
+const titleHTML = document.getElementById("title");
+const platformHTML = document.getElementById("platform");
+
+
+
+
+const postdata = JSON.stringify({
+  image: preview.src.split("base64,")[1],
+  title: titleHTML.value,
+  platform: platformHTML.value,
+  
+});
+console.log(postdata);
+
+const url = "http://localhost:4000/games";
+
+fetch(url, {
+method: "POST",
+headers: {
+"Content-Type": "application/json",
+},
+body: postdata,
+})
+.then((res) => {
+res.json().then((data) => {
+console.log(data)
+});
+});
+
+};
+
+    </script>
+
+</body>
+</html>
