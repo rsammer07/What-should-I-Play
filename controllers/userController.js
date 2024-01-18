@@ -83,3 +83,4 @@ router.put('/remove-game', async (req, res, next) => {
     }
 })
 
+module.exports = router
