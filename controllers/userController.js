@@ -1,86 +1,71 @@
 const express = require("express")
 const router = express.Router()
 const User = require("../models/userModel")
-const passport = require('../db/passport')
 const Game = require("../models/gameModel")
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const { SESSION_SECRET } = require("../config")
 
 
-function index(req, res, next) {
-    let modelQuery = req.query.name ? { name: new RegExp(req.query.name, 'i') } : {}
-    let sortKey = req.query.sort || 'name'
-    User.find(modelQuery)
-    .sort(sortKey).exec(function(err, users) {
-        if (err) return next(err)
-        res.render('users/index', {
-            users,
-            user: req.user,
-            name: req.query.name,
-            sortKey 
-        })
-    })
+//GET USER BY ID
+
+
+
+//GET ALL USERS
+
+
+
+// CREATE USER
+
+const createUser = async (req, res) => {
+    console.log('Creating new user')
+    console.log(req.body)
+    req.body.email=req.body.email.toLowerCase()
+
+
+    //encrypt password
+    const encryptedPW = await bcrypt.hash(req.body.password, 12)
+    req.body.password = encryptedPW
+
+    //create user & token and pass both back
+        const user = await User.create(req.body)
+        const token = await jwt.sign({ userId: user._id, email: user.email }, SESSION_SECRET, {expiresIn: '2h'})
+        return res.json({user, token})
 }
 
-router.get('/users', index)
 
-// Google Oauth login route
-router.get('/auth/google', passport.authenticate(
-    'google',
-    { scope: ['profile', 'email'] }
-))
+// LOGIN
+const logIn = async (req, res) => {
+    console.log('Logging in existing user')
+    req.body.email(req.body.email.toLowerCase())
 
-// Google OAuth callback route
-router.get('/oauth2callback', passport.authenticate(
-    'google',
-    {
-        successRedirect: '/profile',
-        failureRedirect: '/'
+    //check if user exists by querying for email
+    const existingUser = await User.findOne({email: req.body.email})
+    if(!existingUser) {
+        return res.status(401).json({message: 'No user with that email'})
+    } 
+
+    //user exists now decrypt password
+    console.log('comparing provided password with existing user.password')
+    const correctPW = await bcrypt.compare(req.body.password, existingUser.password)
+    if(!correctPW) {
+        return res.status(401).json({message: 'Incorrect password'})
     }
-))
 
-// OAuth logoute route
-router.get('/logout', function(req, res) {
-    req.logout()
-    res.redirect('/')
-})
+    //since correctPW is true now we generate a login token
+    const token = jwt.sign({userId: existingUser._id, email: existingUser.email}, SESSION_SECRET, {expiresIn: '2h'})
+
+    return res.status(201).json({user: existingUser, token})
+
+}
 
 
-//add game into users game database
+// UPDATE USER
 
-router.put('/', async (req, res, next) => {
-    try {
-        if (!req.isAuthenticated()) {
-            return res.status(401).json({ error: 'Unauthorized' })
-        }
-        const user = await User.findById(req.user._id)
-        const gameId = req.body.gameId
-        const game = await Game.findOne({ _id: gameId })
 
-        if (!game) {
-            return res.status(404).json({ error: 'Game not found' })
-        }
-        user.games.push(game.id)
-    } catch (error) {
-        next(error)
-    }
-})
 
-router.put('/remove-game', async (req, res, next) => {
-    try {
-        if(!req.isAuthenticated()) {
-            return res.status(401).json({ error: 'Unauthorized' })
-        }
-        const userId = req.user._id
-        const movieId = req.body.movieId
+// DELETE USER
 
-        const user = await User.findById({ _id: userId })
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' })
-        }
-        user.games.pull(gameId)
-        await user.save()
-    } catch (error) {
-        next(error)
-    }
-})
 
-module.exports = router
+
+module.exports = { createUser, logIn, }

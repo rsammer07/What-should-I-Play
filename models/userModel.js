@@ -1,14 +1,14 @@
 const mongoose = require('mongoose')
 
 const UserSchema = new mongoose.Schema({
-    name: String,
+    firstName: String,
+    lastName: String,
     email: String,
+    password: String,
     games: [{ 
       type: mongoose.Schema.Types.ObjectId,
       ref: "Game"}],
-    googleId: String
-  }, {
-    timestamps: true
+
   });
 
 UserSchema.pre("findOne", function(next) {
@@ -21,6 +21,6 @@ UserSchema.pre("find", function(next) {
   next();
 })
 
-const User = mongoose.model('User', UserSchema)
+const User = mongoose.model('User', UserSchema, 'users')
 
 module.exports = User

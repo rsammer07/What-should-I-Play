@@ -1,48 +1,31 @@
 const express = require('express')
-const router = express.Router()
 const Game = require('../models/gameModel')
 const { IMGBB_API_KEY } = require('../config')
 const imgbbUploader = require('imgbb-uploader')
 
-router.get('/', async (req, res, next) => {
-    try {
-        const games = await Game.find({})
-        res.json(games)
-    } catch (error) {
-        next(error)
-    }
-})
-
-
-router.get("/:id", async (req, res, next) => {
+const getGameById = async (req, res, next) => {
     try {
         const game = await Game.findById(req.params.id)
         res.json(game)
     } catch (error) {
         next(error)
     }
-})
+}
 
 
-router.get('/newGame', async (req, res, next) => {
+const getAllGames = async (req, res, next) => {
     try {
-        res.render('games/newGame')
+        const games = await Game.find({})
+        res.json(games)
     } catch (error) {
         next(error)
     }
-})
-
-router.get('/edit/:id', async (req, res, next) => {
-    try {
-        const game = await Game.findById(req.params.id)
-        res.render('games/editGame', { game })
-    } catch (error) {
-        next(error)
-    }
-})
+}
 
 
-router.post('/', async (req, res, next) => {
+
+
+const createGame = async (req, res, next) => {
     console.log('Creating new game')
     // console.log(req.body)
     const bbOptions = {
@@ -60,13 +43,13 @@ router.post('/', async (req, res, next) => {
         platform: req.body.platform,
         image: imageResponse.url
     })
-})
+}
 
 
-router.put('/:title', async(req, res, next) => {
+const editGame = async(req, res, next) => {
     try {
         const filter = {
-            'title': req.params.title
+            'id': req.params.id
         }
         const data = {
             title: req.body.title,
@@ -78,10 +61,10 @@ router.put('/:title', async(req, res, next) => {
     } catch (error) {
         next(error)
     }
-})
+}
 
 
-router.delete('/:title', async(req, res, next) => {
+const deleteGame = async(req, res, next) => {
     try {
         const title = req.params.title
         await Game.findOneAndDelete({ title: title })
@@ -89,13 +72,13 @@ router.delete('/:title', async(req, res, next) => {
     } catch (error) {
         next(error)
     }
-})
-
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next()
-    }
-    res.redirect('/auth/google')
 }
 
-module.exports = router
+
+module.exports = {
+    getGameById,
+    getAllGames,
+    createGame,
+    editGame,
+    deleteGame,
+}

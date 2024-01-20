@@ -4,12 +4,15 @@
   "description": "Welcome to \"What Should I Play?\" - your go-to app for indecisive gaming moments! Tired of spending more time deciding what game to play than actually playing? This app is here to help. Simply add your game collection to the database, hit the randomizer button, and let fate decide your gaming destiny.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -19,6 +22,7 @@
     "express-session": "^1.17.3",
     "http-errors": "^2.0.0",
     "imgbb-uploader": "^1.5.1",
+    "jsonwebtoken": "^9.0.2",
     "method-override": "^3.0.0",
     "mongoose": "^8.0.4",
     "morgan": "^1.10.0",
