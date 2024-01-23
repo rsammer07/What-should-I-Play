@@ -1,5 +1,4 @@
 const express = require("express")
-const router = express.Router()
 const User = require("../models/userModel")
 const Game = require("../models/gameModel")
 const bcrypt = require('bcryptjs')
@@ -8,11 +7,32 @@ const { SESSION_SECRET } = require("../config")
 
 
 //GET USER BY ID
+const getUserById = (req, res, next) =>{
+    console.log("Getting user by id ${req.params.id}")
+
+    User.findById(req.params.id)
+    .then((usr) => {
+        return res.status(200).json(usr)
+    })
+    .catch((err) => {
+        return next(err)
+    })
+}
 
 
 
 //GET ALL USERS
+const getAllUsers = (req, res, next) =>{
+    console.log("getting all users")
+    User.find()
+    .then((users) => {
+        return res.status(200).json(users)
+    })
+    .catch((err) => {
+        return next(err)
+    })
 
+}
 
 
 // CREATE USER
@@ -37,7 +57,8 @@ const createUser = async (req, res) => {
 // LOGIN
 const logIn = async (req, res) => {
     console.log('Logging in existing user')
-    req.body.email(req.body.email.toLowerCase())
+    console.log(req.body)
+    req.body.email = req.body.email.toLowerCase()
 
     //check if user exists by querying for email
     const existingUser = await User.findOne({email: req.body.email})
@@ -61,11 +82,71 @@ const logIn = async (req, res) => {
 
 
 // UPDATE USER
+const addGame = async (req, res) => {
+    try {
+        if(!req.isAuthenticated()) {
+            return res.status(401).json({message: 'Not authenticated'})
+        }
+        const user = await User.findById(req.user._id)
+        const gameId = req.body._id
+        const game = await Game.findOne({_id: gameId})
+        user.games.push(game)
+        await user.save()
+        return res.json(user)
+    } catch (error) {
+        console.error(error)
+    }
+}
 
+const removeGame = async (req, res) => {
+    try {
+        if (!req.isAuthenticated()) {
+            return res.status(401).json({ message: 'Not authenticated' })
+        }
+        const userId = req.user._id
+        const gameId = req.body._id
+        console.log(gameId)
 
+        const user = await User.findOne({ _id: userId })
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' })
+        }
+        user.games.pull(gameId)
+        await user.save()
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 // DELETE USER
+const deleteUser = async (req, res, next) => {
+    console.log('Deleting user')
+    if(req.userId !== req.params.id) {
+        return res.send("Access Denied")
+    }
+
+    User.findById(req.params.id)
+    .then ((usr) => {
+        if(!usr) {
+            return res.status(404).send("User not found")
+        }
+
+        User.findByIdAndDelete(req.params.id).then(() => {
+            return res.status(200).send("User deleted")
+        })
+    })
+    .catch((err) => {
+        return next(err)
+    })
+}
 
 
-
-module.exports = { createUser, logIn, }
+module.exports = {
+    getUserById,
+    getAllUsers,
+    createUser,
+    logIn,
+    addGame,
+    removeGame,
+    deleteUser
+}

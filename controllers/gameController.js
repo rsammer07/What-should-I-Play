@@ -1,7 +1,9 @@
 const express = require('express')
 const Game = require('../models/gameModel')
+const User = require('../models/userModel')
 const { IMGBB_API_KEY } = require('../config')
 const imgbbUploader = require('imgbb-uploader')
+
 
 const getGameById = async (req, res, next) => {
     try {
@@ -43,6 +45,11 @@ const createGame = async (req, res, next) => {
         platform: req.body.platform,
         image: imageResponse.url
     })
+
+    const user = await User.findById(req.userId)
+    user.games.push(newGame.id)
+    await user.save()
+    
 }
 
 
