@@ -72,8 +72,11 @@ const editGame = async(req, res, next) => {
 
 const deleteGame = async(req, res, next) => {
     try {
-        const title = req.params.title
-        await Game.findOneAndDelete({ title: title })
+        const user = await User.findById(req.userId)
+        const id = req.params.id
+        console.log(id)
+        user.games.pull(id)
+        await Game.findOneAndDelete({ _id: id })
         res.sendStatus(204)
     } catch (error) {
         next(error)
