@@ -8,7 +8,7 @@ const { SESSION_SECRET } = require("../config")
 
 //GET USER BY ID
 const getUserById = (req, res, next) =>{
-    console.log("Getting user by id ${req.params.id}")
+    console.log(`Getting user by id ${req.params.id}`)
 
     User.findById(req.params.id)
     .then((usr) => {
@@ -19,7 +19,14 @@ const getUserById = (req, res, next) =>{
     })
 }
 
-
+const getRandomUserGame = async (req, res, next) =>{
+    console.log("getting random game")
+    const user = await User.findById(req.params.id).populate('games')
+    const gameId = user.games(Math.floor(Math.random() * user.games.length))
+    console.log(`Getting game by id ${gameId}`)
+    randomGame = user.game[gameId]
+    return res.status(200).json(randomGame)
+}
 
 //GET ALL USERS
 const getAllUsers = (req, res, next) =>{
@@ -49,7 +56,7 @@ const createUser = async (req, res) => {
 
     //create user & token and pass both back
         const user = await User.create(req.body)
-        const token = await jwt.sign({ userId: user._id, email: user.email }, SESSION_SECRET, {expiresIn: '2h'})
+        const token = await jwt.sign({ userId: user._id, email: user.email }, SESSION_SECRET)
         return res.json({user, token})
 }
 
@@ -74,7 +81,7 @@ const logIn = async (req, res) => {
     }
 
     //since correctPW is true now we generate a login token
-    const token = jwt.sign({userId: existingUser._id, email: existingUser.email}, SESSION_SECRET, {expiresIn: '2h'})
+    const token = jwt.sign({userId: existingUser._id, email: existingUser.email}, SESSION_SECRET)
 
     return res.status(201).json({user: existingUser, token})
 
@@ -148,5 +155,6 @@ module.exports = {
     logIn,
     addGame,
     removeGame,
-    deleteUser
+    deleteUser,
+    getRandomUserGame
 }

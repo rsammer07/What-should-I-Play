@@ -14,7 +14,6 @@ const getGameById = async (req, res, next) => {
     }
 }
 
-
 const getAllGames = async (req, res, next) => {
     try {
         const games = await Game.find({})
@@ -34,7 +33,7 @@ const createGame = async (req, res, next) => {
         apiKey: IMGBB_API_KEY,
         base64string: req.body.image,
     }
-
+    console.log(req.body)
 
     //Post Image data only to ImgBBAPI & get back URL of image from response
     const imageResponse = await imgbbUploader(bbOptions)

@@ -6,7 +6,8 @@ const {
     logIn,
     removeGame,
     addGame,
-    deleteUser
+    deleteUser,
+    getRandomUserGame
 } = require("../controllers/userController")
 const { checkAuth } = require("../middleware/checkAuth")
 const router = express.Router()
@@ -14,6 +15,9 @@ const router = express.Router()
 
 
 router.get('/:id', getUserById)
+
+
+router.get('/:id/randomGame', getRandomUserGame)
 
 
 router.get('/', getAllUsers)
