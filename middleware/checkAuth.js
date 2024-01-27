@@ -20,7 +20,7 @@ const checkAuth = (req, res, next) => {
         return next(error)     
     }
 }
-
+//TODO CHECK DENIS REPOSITORY ON JWT AUTH
 
 module.exports = { checkAuth }
 

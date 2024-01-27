@@ -72,6 +72,7 @@ const editGame = async(req, res, next) => {
 
 const deleteGame = async(req, res, next) => {
     try {
+        console.log('Deleting game')
         const user = await User.findById(req.userId)
         const id = req.params.id
         console.log(id)
